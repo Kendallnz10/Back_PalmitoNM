@@ -25,8 +25,8 @@ exports.createOrder = async (req, res) => {
           brand_name: "Palmito NM",
           landing_page: "NO_PREFERENCE",
           user_action: "PAY_NOW", 
-            return_url: "http://192.168.100.4:3000/paypal/success-callback",
-            cancel_url: "http://192.168.100.4:3000/paypal/cancel-callback"
+            return_url: "https://backend-palmitonm.onrender.com/paypal/success-callback",
+            cancel_url: "https://backend-palmitonm.onrender.com/paypal/cancel-callback"
         }
       },
       {

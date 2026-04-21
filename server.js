@@ -108,7 +108,6 @@ app.listen(port, '0.0.0.0', () => {
   console.log('==============================================');
   console.log(`✓ Servidor Palmito NM disponible en red local`);
   console.log(`✓ URL Local: http://localhost:${port}`);
-  // Aquí es donde pondrías tu IP, ej: http://192.168.0.15:3000
   console.log('==============================================');
   console.log('✓ Rutas activas listas para recibir peticiones');
   console.log('==============================================');
