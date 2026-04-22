@@ -138,13 +138,48 @@ const loginUsuario = async (req, res) => {
 
 const loginGoogle = async (req, res) => {
     const { correo } = req.body; 
+
     try {
-        const usuario = await palmito.query('SELECT * FROM usuarios WHERE correo = $1', [correo]);
-        if (usuario.rows.length > 0) {
-            const user = usuario.rows[0];
-            res.json({ success: true, nuevoUsuario: false, requiereMFA: user.mfa_activado, id_usuario: user.id_usuario, usuario: user });
-        } else { res.json({ success: true, nuevoUsuario: true, datosPrecargados: { correo } }); }
-    } catch (error) { res.status(500).json({ mensaje: "Error" }); }
+        // 1. Buscamos si el correo ya existe
+        const resultado = await palmito.query('SELECT * FROM usuarios WHERE correo = $1', [correo]);
+
+        if (resultado.rows.length > 0) {
+            const user = resultado.rows[0];
+
+            // 2. Si existe, verificamos el MFA
+            if (user.mfa_activado) {
+                // Caso A: Existe y tiene MFA -> Mandar a pantalla de verificar código
+                return res.json({ 
+                    success: true, 
+                    nuevoUsuario: false, 
+                    requiereMFA: true, 
+                    id_usuario: user.id_usuario,
+                    mensaje: "MFA requerido" 
+                });
+            } else {
+                // Caso B: Existe y NO tiene MFA -> Login directo al catálogo
+                return res.json({ 
+                    success: true, 
+                    nuevoUsuario: false, 
+                    requiereMFA: false, 
+                    id_usuario: user.id_usuario, 
+                    usuario: user,
+                    mensaje: "Login directo"
+                });
+            }
+        } else { 
+            // 3. Caso C: No existe -> Mandar a completar registro
+            // Aquí solo devolvemos los datos para que el Front los use en el form de registro
+            return res.json({ 
+                success: true, 
+                nuevoUsuario: true, 
+                datosPrecargados: { correo } 
+            }); 
+        }
+    } catch (error) { 
+        console.error("Error en loginGoogle:", error);
+        res.status(500).json({ success: false, mensaje: "Error en el servidor" }); 
+    }
 };
 
 // --- FUNCIÓN FACEBOOK ---
